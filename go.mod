@@ -1,4 +1,4 @@
-module github.com/nshmura/dsio
+module github.com/lcartwright/dsio
 
 go 1.15
 
