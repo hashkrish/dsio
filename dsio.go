@@ -8,7 +8,7 @@ import (
 
 	"github.com/lcartwright/dsio/action"
 	"github.com/lcartwright/dsio/core"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 var (
@@ -27,13 +27,13 @@ var (
 	flagServiceAccoutFile = cli.StringFlag{
 		Name:   "key-file",
 		Usage:  "name of GCP service account file.",
-		EnvVar: "DSIO_KEY_FILE",
+		EnvVars: []string{"DSIO_KEY_FILE"},
 	}
 
 	flagProjectID = cli.StringFlag{
 		Name:   "project-id",
 		Usage:  "Project ID of GCP.",
-		EnvVar: "DSIO_PROJECT_ID",
+		EnvVars: []string{"DSIO_PROJECT_ID"},
 	}
 
 	flagVerbose = cli.BoolFlag{
@@ -55,7 +55,7 @@ var (
 func main() {
 	app := cli.NewApp()
 
-	cli.VersionFlag = cli.BoolFlag{
+	cli.VersionFlag = &cli.BoolFlag{
 		Name:  "version, V",
 		Usage: "Show version number and quit",
 	}
@@ -64,44 +64,44 @@ func main() {
 	app.Usage = "A command line tool for Google Cloud Datastore."
 	app.Version = version
 
-	app.Commands = []cli.Command{
+	app.Commands = []*cli.Command{
 		{
 			Name:      "upsert",
 			Usage:     "Bulk-upsert entities into Datastore.",
 			ArgsUsage: "filename",
 			Flags: []cli.Flag{
-				flagNamespace,
-				cli.StringFlag{
+				&flagNamespace,
+				&cli.StringFlag{
 					Name:  "kind, k",
 					Usage: "name of destination kind.",
 				},
-				cli.StringFlag{
+				&cli.StringFlag{
 					Name:  "format, f",
 					Usage: "format of input file. <yaml|csv|tcv>.",
 				},
-				cli.BoolFlag{
+				&cli.BoolFlag{
 					Name:  "dry-run",
 					Usage: "skip Datastore operations.",
 				},
-				cli.IntFlag{
+				&cli.IntFlag{
 					Name:  "batch-size",
 					Value: action.MaxBatchSize,
 					Usage: fmt.Sprintf("number of entities per one multi upsert operation. batch-size should be smaller than %d.", action.MaxBatchSize),
 				},
-				flagServiceAccoutFile,
-				flagProjectID,
-				flagVerbose,
-				flagNoColor,
+				&flagServiceAccoutFile,
+				&flagProjectID,
+				&flagVerbose,
+				&flagNoColor,
 			},
 			Action: func(c *cli.Context) error {
 				args := c.Args()
-				if l := len(args); l == 0 {
+				if l := args.Len(); l == 0 {
 					return core.NewExitError("Filename is not specified")
 
 				} else if l > 1 {
 					return core.NewExitError("Too many args")
 				}
-				filename := args[0]
+				filename := args.Get(0)
 
 				ctx := core.SetContext(c)
 				ctx.PrintContext()
@@ -118,33 +118,33 @@ func main() {
 			Usage:     "Execute a query.",
 			ArgsUsage: `"[<gql_query>]"`,
 			Flags: []cli.Flag{
-				flagNamespace,
-				cli.StringFlag{
+				&flagNamespace,
+				&cli.StringFlag{
 					Name:  "output, o",
 					Usage: "output filename. Entities are outputed into this file.",
 				},
-				cli.StringFlag{
+				&cli.StringFlag{
 					Name:  "format, f",
 					Value: "yaml",
 					Usage: "format of output. <yaml|csv|tcv>.",
 				},
-				cli.StringFlag{
+				&cli.StringFlag{
 					Name:  "style, s",
 					Value: "scheme",
 					Usage: "style of output. <scheme|direct|auto>. used only in yaml format.",
 				},
-				cli.IntFlag{
+				&cli.IntFlag{
 					Name:  "page-size",
 					Value: defaultPageSize,
 					Usage: "number of entities to output at once.",
 				},
-				flagServiceAccoutFile,
-				flagProjectID,
-				flagVerbose,
-				flagNoColor,
+				&flagServiceAccoutFile,
+				&flagProjectID,
+				&flagVerbose,
+				&flagNoColor,
 			},
 			Action: func(c *cli.Context) error {
-				query := strings.Join(c.Args(), " ")
+				query := strings.Join(c.Args().Slice(), " ")
 
 				var format = c.String("format")
 				switch format {

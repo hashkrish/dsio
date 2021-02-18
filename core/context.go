@@ -2,7 +2,8 @@ package core
 
 import (
 	"github.com/fatih/color"
-	"github.com/urfave/cli"
+	//"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 var (
@@ -19,8 +20,7 @@ type Context struct {
 }
 
 func SetContext(c *cli.Context) Context {
-
-	color.NoColor = c.GlobalBool("no-color")
+	color.NoColor = c.Bool("no-color")
 
 	ctx = Context{
 		ServiceAccountFile: c.String("key-file"),
