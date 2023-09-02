@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/datastore"
-	"github.com/lcartwright/dsio/core"
+	"github.com/hashkrish/dsio/core"
 )
 
 const (

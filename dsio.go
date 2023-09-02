@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/lcartwright/dsio/action"
-	"github.com/lcartwright/dsio/core"
+	"github.com/hashkrish/dsio/action"
+	"github.com/hashkrish/dsio/core"
 	"github.com/urfave/cli/v2"
 )
 
@@ -25,14 +25,14 @@ const (
 
 var (
 	flagServiceAccoutFile = cli.StringFlag{
-		Name:   "key-file",
-		Usage:  "name of GCP service account file.",
+		Name:    "key-file",
+		Usage:   "name of GCP service account file.",
 		EnvVars: []string{"DSIO_KEY_FILE"},
 	}
 
 	flagProjectID = cli.StringFlag{
-		Name:   "project-id",
-		Usage:  "Project ID of GCP.",
+		Name:    "project-id",
+		Usage:   "Project ID of GCP.",
 		EnvVars: []string{"DSIO_PROJECT_ID"},
 	}
 

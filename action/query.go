@@ -10,8 +10,8 @@ import (
 	"strings"
 
 	"cloud.google.com/go/datastore"
-	"github.com/lcartwright/dsio/core"
-	"github.com/lcartwright/dsio/gql"
+	"github.com/hashkrish/dsio/core"
+	"github.com/hashkrish/dsio/gql"
 	"google.golang.org/api/iterator"
 )
 
@@ -65,18 +65,42 @@ func Query(ctx core.Context, gqlStr, format string, style core.TypeStyle, filena
 }
 
 func readQuery() (string, error) {
+	var input string
+
+	// Check if there's data available on stdin.
 	info, err := os.Stdin.Stat()
 	if err != nil {
 		return "", err
 	}
 
-	if (info.Mode() & os.ModeCharDevice) == os.ModeCharDevice {
-		fmt.Print("gql> ")
-		return bufio.NewReader(os.Stdin).ReadString('\n')
-
+	if info.Mode()&os.ModeCharDevice == 0 {
+		// Input is coming from a pipe or redirected.
+		reader := bufio.NewReader(os.Stdin)
+		for {
+			line, err := reader.ReadString('\n')
+			if err != nil {
+				if err == io.EOF {
+					break
+				}
+				return "", err
+			}
+            trimmedLine := strings.TrimRight(line, " -")
+			input += trimmedLine
+		}
 	} else {
-		return "", errors.New("pipe not supported")
+		// Input is coming from a terminal.
+		fmt.Print("gql> ")
+		scanner := bufio.NewScanner(os.Stdin)
+		if scanner.Scan() {
+			input = scanner.Text()
+		}
+		if err := scanner.Err(); err != nil {
+			return "", err
+		}
+        trimmedInput := strings.TrimRight(input, " -")
+        input = trimmedInput
 	}
+	return input, nil
 }
 
 func getKindQuery(ctx core.Context, gqlStr string) (string, *datastore.Query, error) {
