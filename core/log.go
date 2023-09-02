@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/fatih/color"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 func Conform(message interface{}) {
@@ -38,10 +38,10 @@ func Debugf(format string, value ...interface{}) {
 	}
 }
 
-func NewExitError(message interface{}) *cli.ExitError {
-	return cli.NewExitError(errors.New(color.RedString("[ERROR] %v", message)), 1)
+func NewExitError(message interface{}) cli.ExitCoder {
+	return cli.Exit(errors.New(color.RedString("[ERROR] %v", message)), 1)
 }
 
-func NewExitErrorf(format string, value ...interface{}) error {
-	return cli.NewExitError(color.RedString("[ERROR] "+format, value...), 1)
+func NewExitErrorf(format string, value ...interface{}) cli.ExitCoder {
+	return cli.Exit(color.RedString("[ERROR] "+format, value...), 1)
 }
